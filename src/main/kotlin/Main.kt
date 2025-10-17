@@ -14,7 +14,9 @@ import java.time.Duration
 import java.util.concurrent.ConcurrentHashMap
 
 fun main() {
-    embeddedServer(Netty, port = 8080) {
+    val port = System.getenv("PORT")?.toInt() ?: 8080
+
+    embeddedServer(Netty, port = port, host = "0.0.0.0") {
         install(WebSockets) {
             pingPeriod = Duration.ofSeconds(15)
             timeout = Duration.ofSeconds(30)
