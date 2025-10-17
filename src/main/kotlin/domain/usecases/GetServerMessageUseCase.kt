@@ -62,7 +62,7 @@ class GetServerMessageUseCase(
             ServerMessageTypeDTO.ERROR -> {
                 exception?.let {
                     ServerMessageDTO.ServerMessageDTOError(
-                        exception = exception
+                        exception = exception.toString()
                     )
                 }
             }

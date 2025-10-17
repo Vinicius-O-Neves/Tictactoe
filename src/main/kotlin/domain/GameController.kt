@@ -1,11 +1,11 @@
 package com.br.tictactoe.domain
 
+import com.br.tictactoe.data.network.models.ClientMessageDTO
 import com.br.tictactoe.domain.enums.GameStatus
-import com.br.tictactoe.domain.enums.MoveResultException
 import com.br.tictactoe.domain.models.Player
 import com.br.tictactoe.domain.enums.ClientMessageType
 import com.br.tictactoe.domain.enums.ServerMessageType
-import com.br.tictactoe.domain.models.ClientMessage
+import com.br.tictactoe.domain.mappers.ClientMessageMapper
 import com.br.tictactoe.domain.usecases.DeleteGameUseCase
 import com.br.tictactoe.domain.usecases.JoinGameUseCase
 import com.br.tictactoe.domain.usecases.SendServerMessageUseCase
@@ -18,7 +18,8 @@ class GameController(
     private val service: GameService,
     private val sendServerMessageUseCase: SendServerMessageUseCase,
     private val joinGameUseCase: JoinGameUseCase,
-    private val deleteGameUseCase: DeleteGameUseCase
+    private val deleteGameUseCase: DeleteGameUseCase,
+    private val clientMessageMapper: ClientMessageMapper
 ) {
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -44,10 +45,25 @@ class GameController(
         try {
             session.incoming.consumeEach { frame ->
                 if (frame is Frame.Text) {
-                    val msg = json.decodeFromString<ClientMessage>(frame.readText())
+                    val msg = json.decodeFromString<ClientMessageDTO>(frame.readText())
 
-                    if (msg.type == ClientMessageType.MOVE && msg.position != null) {
-                        val gameStatus = service.makeMove(game, player, msg.position)
+                    val mappedClientMessage = clientMessageMapper.toObject(msg)
+
+                    if (mappedClientMessage.type == ClientMessageType.MOVE && mappedClientMessage.position != null) {
+                        val gameStatus = try {
+                            service.makeMove(game, player, mappedClientMessage.position)
+                        } catch (exception: Exception) {
+                            sendServerMessageUseCase(
+                                game = game,
+                                player = player,
+                                serverMessageType = ServerMessageType.ERROR,
+                                exception = exception
+                            )
+
+                            null
+                        }
+
+                        if (gameStatus == null) return@consumeEach
 
                         when (gameStatus) {
                             GameStatus.IN_PROGRESS -> {
@@ -89,13 +105,15 @@ class GameController(
                     }
                 }
             }
-        } catch (moveResultException: MoveResultException) {
+        } catch (exception: Exception) {
             sendServerMessageUseCase(
                 game = game,
                 player = player,
                 serverMessageType = ServerMessageType.ERROR,
-                exception = moveResultException
+                exception = exception
             )
+
+            return@handleConnection
         } finally {
             println("Client disconnected")
         }

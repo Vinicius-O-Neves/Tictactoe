@@ -1,6 +1,6 @@
 object Ktor {
 
-    private const val ktorVersion = "2.3.10"
+    private const val ktorVersion = "2.3.5"
 
     const val serverCore = "io.ktor:ktor-server-core:$ktorVersion"
     const val serverNetty = "io.ktor:ktor-server-netty:$ktorVersion"

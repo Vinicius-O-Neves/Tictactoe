@@ -1,4 +1,4 @@
-package com.br.tictactoe.domain.mappers
+package com.br.tictactoe.data.network.mappers
 
 import Mapper
 import com.br.tictactoe.data.network.enums.ServerMessageTypeDTO
