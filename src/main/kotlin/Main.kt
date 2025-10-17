@@ -30,7 +30,7 @@ fun main() {
             val controller: GameController by inject()
 
             webSocket("/tictactoe") {
-
+                controller.handleConnection(session = this)
             }
         }
     }.start(wait = true)
