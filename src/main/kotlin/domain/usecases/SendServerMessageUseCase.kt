@@ -9,6 +9,7 @@ import com.br.tictactoe.domain.models.Player
 import io.ktor.server.websocket.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.encodeToJsonElement
 
 class SendServerMessageUseCase(
     private val playerDTOMapper: PlayerDTOMapper,
@@ -55,10 +56,10 @@ class SendServerMessageUseCase(
         }
 
         if (serverMessageType == ServerMessageType.ERROR) {
-            player.session.sendSerialized(json.encodeToString(serverMessageDTO))
+            player.session.sendSerialized(json.encodeToJsonElement(serverMessageDTO))
         } else {
             game.players.forEach {
-                it.session.sendSerialized(json.encodeToString(serverMessageDTO))
+                it.session.sendSerialized(json.encodeToJsonElement(serverMessageDTO))
             }
         }
     }
