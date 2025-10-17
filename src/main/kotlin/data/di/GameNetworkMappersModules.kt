@@ -11,6 +11,6 @@ fun injectGameNetworkMappersModules() = gameNetworkMappersModules
 val gameNetworkMappersModules = module {
     factory { GameStatusDTOMapper() }
     factory { PlayerSymbolDTOMapper() }
-    factory { PlayerDTOMapper() }
+    factory { PlayerDTOMapper(get()) }
     factory { GameDTOMapper(get(), get(), get()) }
 }
