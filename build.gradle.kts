@@ -2,6 +2,7 @@ plugins {
     kotlin("jvm") version "2.1.10"
     kotlin("plugin.serialization") version "1.9.23"
     application
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "com.br.tictactoe"
@@ -40,5 +41,12 @@ kotlin {
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "com.br.tictactoe.MainKt"
+    }
+}
+
+tasks {
+    shadowJar {
+        archiveClassifier.set("")
+        mergeServiceFiles()
     }
 }
