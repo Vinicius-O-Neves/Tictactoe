@@ -46,11 +46,17 @@ class Main {
             routing {
                 val controller: GameController by inject()
 
-                webSocket("/tictactoe") {
+                webSocket(getPath(path = "/tictactoe")) {
                     controller.handleConnection(session = this)
                 }
             }
         }.start(wait = true)
+    }
+
+    private fun getPath(path: String): String {
+        val baseUrl = "wss://tictactoe-2yck.onrender.com"
+
+        return "$baseUrl$path"
     }
 }
 
