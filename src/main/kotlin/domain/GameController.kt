@@ -63,8 +63,6 @@ class GameController(
                             null
                         }
 
-                        if (gameStatus == null) return@consumeEach
-
                         when (gameStatus) {
                             GameStatus.IN_PROGRESS -> {
                                 sendServerMessageUseCase(
